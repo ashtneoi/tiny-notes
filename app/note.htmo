@@ -1,0 +1,52 @@
+{{#let}}head_extra:
+<script type="application/javascript">
+var $ = document.querySelector.bind(document);
+var dirty = false;
+
+document.addEventListener("DOMContentLoaded", function(e) {
+    window.addEventListener("beforeunload", function(e) {
+        if ( dirty ) {
+            var text = "Did you save?";
+            e.returnValue = text;
+            return text;
+        }
+    });
+
+    var note_text = $("#note-text");
+    var mark_dirty = function() {
+        note_text.removeEventListener("input", mark_dirty);
+        dirty = true;
+    };
+    note_text.addEventListener("input", mark_dirty);
+
+    $("#submit-note").addEventListener("click", function(e) {
+        note_text.addEventListener("input", mark_dirty);
+        dirty = false;
+    });
+});
+</script>
+{{/let}}
+{{#wrap}}../../base.htmo:
+    <main>
+        <form action="" autocomplete=off method=get>
+            <div>
+                <input type=text name="day" value="{{day}}">
+                <button type=submit>Go</button>
+                <a href="note?day={{yesterday}}">&lt;&lt;&lt;</a>
+                <a href="note">Today</a>
+                <a href="note?day={{tomorrow}}">&gt;&gt;&gt;</a>
+            </div>
+        </form>
+        <form action="" autocomplete=off method=post>
+            <div>
+                <textarea id="note-text" name="content" autofocus=on
+                        autocomplete=off
+                        style="height: 400px; width: 80%; font-family: serif;"
+                >{{content}}</textarea>
+            </div>
+            <div>
+                <button id="submit-note" type=submit>Save</button>
+            </div>
+        </form>
+    </main>
+{{/wrap}}
