@@ -1,0 +1,15 @@
+server_name {{server_name}};
+
+location {{mount_point}}static/ {
+    root {{app_name}};
+}
+
+location {{mount_point}}special/ {
+    internal;
+    root {{app_name}};
+}
+
+location {{mount_point}} {
+    include uwsgi_params;
+    uwsgi_pass unix:{{app_name}}/uwsgi.sock;
+}
