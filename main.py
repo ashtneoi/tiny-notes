@@ -148,7 +148,7 @@ def require_auth_render(name):
         return HTMLResponse(
             render_path(name, {
                 "base": MOUNT_POINT,
-            }
+            })
         )
     return inner
 
@@ -203,7 +203,7 @@ def note(req, username):
 
 
 application = create_app(MOUNT_POINT, (
-    ("", require_auth_render("special/home.html")),
+    ("", require_auth_render("tmpl/home.htmo")),
     ("note", note),
     ("login", login),
     ("logout", logout),
