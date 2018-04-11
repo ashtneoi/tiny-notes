@@ -7,3 +7,4 @@ __pycache__/
 /special/*.html
 /notes/
 /notes-*.tar.gz
+/nginx.app.conf
