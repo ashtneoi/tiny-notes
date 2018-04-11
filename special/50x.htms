@@ -1,0 +1,7 @@
+{{#let}}title:Internal server error{{/let}}
+{{#let}}base:{{/let}}
+{{#wrap}}../../base.htmo:
+    <main>
+        <h1>Internal server error</h1>
+    </main>
+{{/wrap}}

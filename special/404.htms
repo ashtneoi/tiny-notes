@@ -1,0 +1,7 @@
+{{#let}}title:Page not found{{/let}}
+{{#let}}base:{{/let}}
+{{#wrap}}../../base.htmo:
+    <main>
+        <h1>Page not found</h1>
+    </main>
+{{/wrap}}
