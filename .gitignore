@@ -1,0 +1,9 @@
+.*.sw?
+*.pyc
+__pycache__/
+
+/secrets.py
+/tmpl/*.html
+/special/*.html
+/notes/
+/notes-*.tar.gz
