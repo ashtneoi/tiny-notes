@@ -1,10 +1,10 @@
 location {{mount_point}}static/ {
-    root {{app_name}};
+    alias {{app_name}}/static/;
 }
 
 location {{mount_point}}special/ {
     internal;
-    root {{app_name}};
+    alias {{app_name}}/special/;
 }
 
 location {{mount_point}} {
