@@ -52,6 +52,7 @@ def login(req):
             return resp
 
     if auth_mgr.cookie_to_username(req.cookies.get("id")):
+        # Already logged in.
         return redirect(MOUNT_POINT, code=303)
     else:
         resp = HTMLResponse(
@@ -116,8 +117,7 @@ def note(req, username):
     if req.method == 'POST':
         if not "content" in req.form:
             raise abort(400)
-        with open(name, "w") \
-                as f:
+        with open(name, "w") as f:
             f.write(req.form["content"] + "\n")
         return redirect(req.full_path, code=303)
 
