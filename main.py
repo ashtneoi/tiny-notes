@@ -1,63 +1,20 @@
 import datetime
 import html
-import json
 import re
-from base64 import b64encode
-from functools import wraps
-from os import urandom
 
-import bcrypt
-from werkzeug.exceptions import abort, HTTPException, NotFound
-from werkzeug.routing import Map, Rule
-from werkzeug.urls import url_quote, url_unquote
+from werkzeug.exceptions import abort
+from werkzeug.urls import url_unquote
 from werkzeug.utils import redirect
 
+from auth import AuthManager
 from bakery import render_path
 from config import config
-from hashpw import checkpw
-from secrets import accounts, SECRET
 from tantilla import create_app, HTMLResponse
 
 
 MOUNT_POINT = config["mount_point"]
 
-sessions = {}  # id: (username, expiration)
-
-
-def abs_to_rel(path):
-    if path[:len(MOUNT_POINT)] == MOUNT_POINT:
-        return path[len(MOUNT_POINT):]
-    return path
-
-
-def cookie_to_username(id_):
-    session = sessions.get(id_)
-    if session is None:
-        return None
-    username, expiration = session
-    if username in accounts and expiration > datetime.datetime.now():
-        return username
-    else:
-        del sessions[id_]
-        return None
-
-
-def require_auth(func):
-    @wraps(func)
-    def new_func(req):
-        username = cookie_to_username(req.cookies.get("id"))
-        if username:
-            return func(req, username)
-        else:
-            resp = redirect(
-                MOUNT_POINT + "login?from=" + url_quote(
-                    abs_to_rel(req.full_path)
-                ),
-                code=303,
-            )
-            resp.delete_cookie("id")
-            return resp
-    return new_func
+auth_mgr = AuthManager(MOUNT_POINT)
 
 
 def login(req):
@@ -65,8 +22,10 @@ def login(req):
         if "username" not in req.form or "password" not in req.form:
             return abort(400)
         username = req.form["username"]
-        hashed = accounts.get(username)
-        if hashed is None:
+        password = req.form["password"]
+
+        auth_result = auth_mgr.try_log_in(username, password)
+        if auth_result == AuthManager.USER_NOT_FOUND:
             return HTMLResponse(
                 render_path("tmpl/login.htmo", {
                     "base": MOUNT_POINT,
@@ -75,7 +34,7 @@ def login(req):
                 }),
                 status=403,  # This one is iffy.
             )
-        if not checkpw(req.form["password"], hashed):
+        elif auth_result == AuthManager.PW_WRONG:
             return HTMLResponse(
                 render_path("tmpl/login.htmo", {
                     "base": MOUNT_POINT,
@@ -84,28 +43,15 @@ def login(req):
                 }),
                 status=403,  # This one is iffy.
             )
+        else:
+            id_, expiration = auth_result
+            from_ = url_unquote(req.args.get("from", ""))
 
-        sessions2 = sessions.copy()
-        for id_ in sessions2:
-            _, expiration = sessions2[id_]
-            if expiration <= datetime.datetime.now():
-                del sessions[id_]
+            resp = redirect(MOUNT_POINT + from_, code=303)
+            resp.set_cookie("id", id_, expires=expiration, secure=True)
+            return resp
 
-        id_ = b64encode(urandom(32)).decode('ascii')
-        assert id_ not in sessions  # until I verify this works
-        expiration = datetime.datetime.now() + datetime.timedelta(days=14)
-
-        from_ = ""
-        if "from" in req.args:
-            from_ = url_unquote(req.args["from"])
-
-        resp = redirect(MOUNT_POINT + from_, code=303)
-        resp.set_cookie("id", id_, expires=expiration, secure=True)
-        sessions[id_] = (username, expiration)
-        return resp
-
-    id_ = req.cookies.get("id")
-    if id_ and cookie_to_username(id_):
+    if auth_mgr.cookie_to_username(req.cookies.get("id")):
         return redirect(MOUNT_POINT, code=303)
     else:
         resp = HTMLResponse(
@@ -133,7 +79,7 @@ def logout(req):
 
 
 def require_auth_static(name):
-    @require_auth
+    @auth_mgr.require_auth
     def inner(req, username):
         with open(name) as f:
             return HTMLResponse(
@@ -143,7 +89,7 @@ def require_auth_static(name):
 
 
 def require_auth_render(name):
-    @require_auth
+    @auth_mgr.require_auth
     def inner(req, username):
         return HTMLResponse(
             render_path(name, {
@@ -153,7 +99,7 @@ def require_auth_render(name):
     return inner
 
 
-@require_auth
+@auth_mgr.require_auth
 def note(req, username):
     if not "day" in req.args:
         return redirect(
