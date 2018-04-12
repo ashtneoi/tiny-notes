@@ -78,16 +78,6 @@ def logout(req):
     return resp
 
 
-def require_auth_static(name):
-    @auth_mgr.require_auth
-    def inner(req, username):
-        with open(name) as f:
-            return HTMLResponse(
-                f.read()
-            )
-    return inner
-
-
 def require_auth_render(name):
     @auth_mgr.require_auth
     def inner(req, username):
