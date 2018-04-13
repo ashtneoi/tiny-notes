@@ -2,14 +2,13 @@ import datetime
 import html
 import re
 
-from werkzeug.exceptions import abort
 from werkzeug.urls import url_unquote
 from werkzeug.utils import redirect
 
 from auth import AuthManager
 from bakery import render_path
 from config import config
-from tantilla import create_app, HTMLResponse
+from tantilla import create_app, HTMLResponse, status
 
 
 MOUNT_POINT = config["mount_point"]
@@ -20,7 +19,7 @@ auth_mgr = AuthManager(MOUNT_POINT)
 def login(req):
     if req.method == 'POST':
         if "username" not in req.form or "password" not in req.form:
-            return abort(400)
+            return status(req, 400)
         username = req.form["username"]
         password = req.form["password"]
 
@@ -68,7 +67,7 @@ def login(req):
 
 def logout(req):
     if req.method == 'POST':
-         return abort(400)
+         return status(req, 400)
 
     id_ = req.cookies.get("id")
 
@@ -105,18 +104,18 @@ def note(req, username):
     day_str = req.args["day"]
     day_match = re.match("^([0-9]{4})-([0-9]{2})-([0-9]{2})$", day_str)
     if not day_match:
-        raise abort(400)
+        raise status(req, 400)
     try:
         day = datetime.date(*map(int, day_match.groups()))
     except ValueError:
-        raise abort(400)
+        raise status(req, 400)
 
     name = "notes/" + username + "/" + day_str
     one_day = datetime.timedelta(days=1)
 
     if req.method == 'POST':
         if not "content" in req.form:
-            raise abort(400)
+            raise status(req, 400)
         with open(name, "w") as f:
             f.write(req.form["content"] + "\n")
         return redirect(req.full_path, code=303)
