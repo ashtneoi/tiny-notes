@@ -2,7 +2,9 @@
 *.pyc
 __pycache__/
 
-/secrets.py
+/config.toml
+/secrets.toml
+/uwsgi.log
 /tmpl/*.html
 /special/*.html
 /notes/
