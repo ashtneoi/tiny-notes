@@ -8,7 +8,7 @@ from werkzeug.utils import redirect
 from auth import AuthManager
 from bakery import render_path
 from config import config
-from tantilla import create_app, HTMLResponse, status
+from tantilla import create_app, HTMLResponse, static_redirect, status
 
 
 MOUNT_POINT = config["mount_point"]
@@ -138,7 +138,7 @@ def note(req, username):
 
 
 application = create_app(MOUNT_POINT, (
-    ("", require_auth_render("tmpl/home.htmo")),
+    ("", static_redirect(MOUNT_POINT + "note")),
     ("note", note),
     ("login", login),
     ("logout", logout),

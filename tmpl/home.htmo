@@ -1,8 +1,0 @@
-{{#let}}title:Home{{/let}}
-{{#wrap}}../../base.htmo:
-    <main>
-        <nav><p>
-            <a href="note">Notes</a>
-        </p></nav>
-    </main>
-{{/wrap}}
