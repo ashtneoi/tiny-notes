@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
 </script>
 <style>
     #note-text {
-        height: 30em;
+        height: 85vh;
         width: 90%;
         max-width: 50em;
         font-family: serif;
