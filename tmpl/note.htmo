@@ -25,6 +25,14 @@ document.addEventListener("DOMContentLoaded", function(e) {
     });
 });
 </script>
+<style>
+    #note-text {
+        height: 30em;
+        width: 90%;
+        max-width: 50em;
+        font-family: serif;
+    }
+</style>
 {{/let}}
 {{#wrap}}../../base.htmo:
     <main>
@@ -41,7 +49,6 @@ document.addEventListener("DOMContentLoaded", function(e) {
             <div>
                 <textarea id="note-text" name="content" autofocus=on
                         autocomplete=off
-                        style="height: 400px; width: 80%; font-family: serif;"
                 >{{content}}</textarea>
             </div>
             <div>
