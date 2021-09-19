@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
     }
 </style>
 {{/let}}
-{{#wrap}}../../base.htmo:
+{{#wrap}}base.htmo:
     <main>
         <form action="" autocomplete=off method=get>
             <div>

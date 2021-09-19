@@ -1,12 +1,9 @@
-.*.sw?
 *.pyc
 __pycache__/
 
 /config.toml
-/secrets.toml
 /uwsgi.log
 /tmpl/*.html
 /special/*.html
 /notes/
 /notes-*.tar.gz
-/nginx.app.conf

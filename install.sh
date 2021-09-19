@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 set -eu
 
-root="$(dirname "$0")/.."
-
-if ! [[ -d "$root/.env" ]]; then
-    virtualenv "$root/.env" -p "$(which python3)"
+if ! [[ -d .env ]]; then
+    python3 -mvenv .env
 fi
+source .env/bin/activate
 
-source "$root/.env/bin/activate"
-pip3 install bcrypt==3.1.3
+pip3 install uWSGI==2.0.14 Werkzeug==0.11.15 toml==0.9.4
