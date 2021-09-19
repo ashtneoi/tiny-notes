@@ -2,7 +2,6 @@
 <html lang="en-US">
     <head>
         <meta charset="UTF-8">
-        {{#base}}<base href="{{base}}">{{/base}}
         <link rel="icon" href="/static/favicon.png">
         <title>{{title}}</title>
         {{head_extra?}}

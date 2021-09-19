@@ -6,18 +6,18 @@ import toml
 from werkzeug.utils import redirect
 
 from bakery import render_path
-from tantilla import create_app, HTMLResponse, static_redirect, status
+from tiny_tantilla import \
+    create_single_page_app, HTMLResponse, static_redirect, status
 
 
 def note(req):
+    today_str = datetime.datetime.now(
+        datetime.timezone(datetime.timedelta(hours=-8))
+    ).date().isoformat()
+
     if not "day" in req.args:
         return redirect(
-            (
-                "note?day="
-                + datetime.datetime.now(
-                    datetime.timezone(datetime.timedelta(hours=-8))
-                ).date().isoformat()
-            ),
+            f"{req.base_url}?day={today_str}",
             code=307,  # like 302 but with more explicit semantics
         )
     day_str = req.args["day"]
@@ -46,16 +46,15 @@ def note(req):
         content = ""
     return HTMLResponse(
         render_path("tmpl/note.htmo", {
-            "base": "/",
             "title": day_str,
+            "base_url": req.base_url,
             "day": day_str,
             "yesterday": (day - one_day).isoformat(),
+            "today": today_str,
             "tomorrow": (day + one_day).isoformat(),
             "content": html.escape(content)[:-1],
         }),
     )
 
 
-application = create_app("/", (
-    ("note", note),
-))
+application = create_single_page_app(note)

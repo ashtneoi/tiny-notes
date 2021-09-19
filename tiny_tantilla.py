@@ -33,16 +33,13 @@ def static_redirect(to):
     return inner
 
 
-def create_app(mount_point, url_map, status=status):
-    url_map = Map(
-        [Rule(mount_point + path, endpoint=ep) for (path, ep) in url_map]
-    )
+def create_single_page_app(handler, status=status):
     def app(environ, start_response):
+        print(environ)
         with Request(environ) as req:
             try:
-                endpoint, values = url_map.bind_to_environ(environ).match()
                 if req.method in ('GET', 'POST'):
-                    resp = endpoint(req, **values)
+                    resp = handler(req)
                 else:
                     resp = status(req, 400)(environ, start_response)
             except NotFound:

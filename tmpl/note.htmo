@@ -40,9 +40,9 @@ document.addEventListener("DOMContentLoaded", function(e) {
             <div>
                 <input type=text name="day" value="{{day}}">
                 <button type=submit>Go</button>
-                <a href="note?day={{yesterday}}">&lt;&lt;&lt;</a>
-                <a href="note">Today</a>
-                <a href="note?day={{tomorrow}}">&gt;&gt;&gt;</a>
+                <a href="{{base_url}}?day={{yesterday}}">&lt;&lt;&lt;</a>
+                <a href="{{base_url}}?day={{today}}">Today</a>
+                <a href="{{base_url}}?day={{tomorrow}}">&gt;&gt;&gt;</a>
             </div>
         </form>
         <form action="" autocomplete=off method=post>
